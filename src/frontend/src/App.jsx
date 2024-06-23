@@ -1,31 +1,67 @@
-import { useState } from 'react';
-import reactLogo from './assets/react.svg';
-import viteLogo from '/vite.svg';
+import React, { useState, useEffect, useRef } from 'react';
+import Pitch from './components/Pitch';
+import MatchStats from './components/MatchStats';
+import { BrowserRouter as Router, Route, Link, Routes } from 'react-router-dom';
 import './App.css';
+import PlayerStats from './components/PlayerStats';
+import FreeKicks from './components/FreeKicks';
 
 function App() {
-  const [count, setCount] = useState(0);
+  const [ballLocationData, setballLocationData] = useState([]);
+  const [teams, setTeams] = useState([]);
 
-  return (
-    <>
+  useEffect(() => {
+    // Fetch the ball data from the JSON file
+    fetch('ball-data.json')
+      .then(response => response.json())
+      .then(data => {
+        setballLocationData(data[0].match.ballLocation)
+        setTeams(data[0].match.teams);
+      });
+  }, []);
+
+
+  return <>
+    <div className="flex flex-col items-center justify-center space-y-4 border border-black bg-blue-900 text-white w-100 h-100">
+      <div className="text-center">
+        <p>In-Play Football</p>
+      </div>
       <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+        <p>Milwall vs City</p>
       </div>
-      <h1> Hello World </h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>count is {count}</button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
+      <div className="border border-black relative">
+        <Router>
+          <div className="flex justify-center space-x-4 border border-black">
+            <Link to="/pitch" className="hover:bg-blue-700 text-white font-bold py-1 px-2 rounded focus:outline-none focus:bg-white focus:border-2 focus:text-black">
+              Pitch
+            </Link>
+            <Link to="/matchstats" className="hover:bg-blue-700 text-white font-bold py-1 px-2 rounded focus:outline-none focus:bg-white focus:border-2 focus:text-black">
+              Match Stats
+            </Link>
+            <Link to="/playerstats" className="hover:bg-blue-700 text-white font-bold py-1 px-2 rounded focus:outline-none focus:bg-white focus:border-2 focus:text-black">
+              Player Stats
+            </Link>
+            <Link to="/freekicks" className="hover:bg-blue-700 text-white font-bold py-1 px-2 rounded focus:outline-none focus:bg-white focus:border-2 focus:text-black">
+              Free Kicks
+            </Link>
+          </div>
+          <Routes>
+            <Route path="/pitch" element={<Pitch ballLocationData={ballLocationData} teams={teams} />} />
+            <Route path="/matchstats" element={
+              <>
+                <Pitch ballLocationData={ballLocationData} teams={teams} />
+                <MatchStats ballLocationData={ballLocationData} />
+              </>
+            }
+            />
+            <Route path="/playerstats" element={<PlayerStats ballLocationPlayerData={ballLocationData} />} />
+            <Route path="/freekicks" element={<FreeKicks  ballData={ballLocationData} teamsData={teams}/>} />
+
+          </Routes>
+        </Router>
       </div>
-      <p className="read-the-docs">Click on the Vite and React logos to learn more</p>
-    </>
-  );
+    </div>
+  </>
 }
 
 export default App;
