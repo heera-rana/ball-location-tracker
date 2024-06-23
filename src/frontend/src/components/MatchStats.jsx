@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 
-function Stats({ ballLocation }) {
+function MatchStats({ ballLocationData }) {
     const [selectedAssociation, setSelectedAssociation] = useState('ALL');
 
-    const filteredBallLocation = ballLocation.filter(curr => selectedAssociation === 'ALL' || curr.association === selectedAssociation);
+    //Filter the data based on the selected association
+    const filteredballLocationData = ballLocationData.filter(curr => selectedAssociation === 'ALL' || curr.association === selectedAssociation);
 
-    const stats = filteredBallLocation.reduce((acc, curr) => {
+    const stats = filteredballLocationData.reduce((acc, curr) => {
+        //For any of these event types, count how many times occurred
         if (curr.eventType === 'PASS' || curr.eventType === 'THROW_IN' || curr.eventType === 'INTERCEPTION' || curr.eventType === 'GOAL' || curr.eventType === 'TACKLE') {
             acc[curr.eventType] = (acc[curr.eventType] || 0) + 1;
         }
@@ -40,4 +42,4 @@ function Stats({ ballLocation }) {
     );
 }
 
-export default Stats;
+export default MatchStats;
